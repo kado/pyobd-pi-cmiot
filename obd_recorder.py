@@ -7,6 +7,7 @@ import obd_sensors
 import time
 import getpass
 import obd_api
+import obd_gps
 
 from obd_utils import scanSerial
 
@@ -81,10 +82,18 @@ class OBD_Recorder():
                 results[obd_sensors.SENSORS[index].shortname] = value
 
             gear = self.calculate_gear(results["rpm"], results["speed"])
-            if lng == None:
+
+            location = obd_gps.getGPS("/dev/ttyUSB0", 9600)
+
+            if location.lng == None:
                 lng = "0.0"
-            if lat == None:
+            else:
+                lng = location.lng
+            
+            if location.lat == None:
                 lat = "0.0"
+            else:
+                lat = location.lat
 
             log_string = log_string + "," + str(gear) + "," + lng + "," + lat
             #Insertar linea para enviar a API
